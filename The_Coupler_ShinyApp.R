@@ -3,6 +3,12 @@
 install.packages('shiny')
 install.packages('shinydashboard')
 install.packages('flexdashboard')
+install.packages('dplyr')
+install.packages('RVenn')
+install.packages('igraph')
+library(dplyr)
+library(RVenn)
+library(igraph)
 library(shiny)
 library(shinydashboard)
 library(flexdashboard)
@@ -13,17 +19,17 @@ ui <- fluidPage(dashboardPage(dashboardHeader(title="The Coupler"), dashboardSid
 
 fileInput("file1", "Selecione o arquivo:", accept = ".txt"),
 
-selectInput("sep", "Separador:", c(" ", Vírgula = ",", Ponto_Vírgula = ";", Tabulado = "\t")),
+selectInput("sep", "Separador:", c(" ", VÃ­rgula = ",", Ponto_VÃ­rgula = ";", Tabulado = "\t")),
 
-selectInput("normalization", "Normalizações:", c("ABA (sem normalização)", "Cosseno de Salton", "Índice de Jaccard")),
-
-fluidPage(h5(" ")),
-
-fluidPage(tags$a(href="https://github.com/rafaelcastanha/The-Bibliographic-Coupler", "Código (GitHub)")),
+selectInput("normalization", "NormalizaÃ§Ãµes:", c("ABA (sem normalizaÃ§Ã£o)", "Cosseno de Salton", "Ãndice de Jaccard")),
 
 fluidPage(h5(" ")),
 
-fluidPage(tags$a(href="http://lattes.cnpq.br/4834832439175113", "Currículo Lattes")),
+fluidPage(tags$a(href="https://github.com/rafaelcastanha/The-Coupler-Shiny-App", "CÃ³digo (GitHub)")),
+
+fluidPage(h5(" ")),
+
+fluidPage(tags$a(href="http://lattes.cnpq.br/4834832439175113", "CurrÃ­culo Lattes")),
 
 fluidPage(h5(" ")),
 
@@ -43,29 +49,23 @@ dashboardBody(
 
 tabsetPanel(type="tab",
 
-tabPanel(title="Rede de Acoplamento Bibliográfico", column(width = 12, plotOutput(outputId = "PlotCoupling",  width = "100%", heigh=680))), 
+tabPanel(title="Rede de Acoplamento BibliogrÃ¡fico", column(width = 12, plotOutput(outputId = "PlotCoupling",  width = "100%", heigh=680))), 
 
-tabPanel(title="Frequências de Acoplamento", dataTableOutput(outputId = "DataFrameCoupling")),
+tabPanel(title="FrequÃªncias de Acoplamento", dataTableOutput(outputId = "DataFrameCoupling")),
 
 tabPanel(title="Unidades de Acoplamento", dataTableOutput(outputId = "DataFrameUnits")),
 
-tabPanel(title="Matriz Citação", dataTableOutput(outputId = "DataFrameCit")),
+tabPanel(title="Matriz CitaÃ§Ã£o", dataTableOutput(outputId = "DataFrameCit")),
 
 tabPanel(title="Matriz Acoplamento", dataTableOutput(outputId = "DataFrameMatrix")),
 
-tabPanel(title="Matriz Cocitação", dataTableOutput(outputId = "DataFrameCocit"))
+tabPanel(title="Matriz CocitaÃ§Ã£o", dataTableOutput(outputId = "DataFrameCocit"))
 
 ))))
 
 server <- function(input, output){
 
 observe({
-
-#bibliotecas 
-
-library(dplyr)
-library(RVenn)
-library("igraph")
 
 #Arquivo
 
@@ -90,7 +90,7 @@ corpus<-isolate(read.table(r()$datapath, header = TRUE, sep = input$sep))
 
 corpus<-as.data.frame(corpus)
 
-#remover espaços e vazios
+#remover espaÃ§os e vazios
 
 corpus<-corpus
 corpus[corpus==""|corpus==" "|corpus=="   "]<-NA
@@ -107,11 +107,11 @@ colnames(df2)[1]<-"units"
 colnames(df2)[2]<-"refs"
 references<-df2
 
-#Transformação em objeto Venn
+#TransformaÃ§Ã£o em objeto Venn
 
 corpus_aba<-Venn(corpus)
 
-#Intersecção Pareada: identificação das unidades de acoplamento
+#IntersecÃ§Ã£o Pareada: identificaÃ§Ã£o das unidades de acoplamento
 
 ABA<-overlap_pairs(corpus_aba)
 
@@ -125,7 +125,7 @@ units_coupling<-unit_aba %>% group_by(ind) %>% summarise(valeus=(paste(values, c
 
 units_final<-as.data.frame(units_coupling)
 
-colnames(units_final)[1]<-"Unidades de Análise"
+colnames(units_final)[1]<-"Unidades de AnÃ¡lise"
 colnames(units_final)[2]<-"Unidades de Acoplamento"
 
 #Intensidades de ABA
@@ -141,14 +141,14 @@ colnames(m1)[4]<-"refs_X2"
 colnames(m1)[5]<-"refs_X1"
 Freq_ABA<-m1 %>% select(X1,X2,"refs_X1","refs_X2","ABA")
 
-#Normalizações 
+#NormalizaÃ§Ãµes 
 
 novacoluna<-c("Saltons_Cosine")
 Freq_ABA[,novacoluna]<-Freq_ABA$ABA/sqrt(Freq_ABA$refs_X1*Freq_ABA$refs_X2)
 novacoluna_2<-c("Jaccard_Index")
 Freq_ABA[,novacoluna_2]<-Freq_ABA$ABA/(Freq_ABA$refs_X1+Freq_ABA$refs_X2-Freq_ABA$ABA)
 
-#Rede de acoplamento bibliográfico
+#Rede de acoplamento bibliogrÃ¡fico
 
 net_list<-filter(Freq_ABA, ABA>0)
 links<-data.frame(source=c(net_list$X1), target=c(net_list$X2))
@@ -174,7 +174,7 @@ mtx_cit<-t(dt2)
 mtx_cocit<-(t(mtx_cit) %*% mtx_cit)
 mtx_cocit<-as.table(mtx_cocit)
 
-#Matriz Cocitação
+#Matriz CocitaÃ§Ã£o
 
 mtx_cocit_df<-as.data.frame(mtx_cocit)
 links_cocit<-data.frame(source=c(mtx_cocit_df$Var1), target=c(mtx_cocit_df$Var2))
@@ -185,7 +185,7 @@ mtx_adj_cocit_df<-as.data.frame(as.matrix(mtx_adj_cocit))
 mtx_adj_cocit_df<-tibble::rownames_to_column(mtx_adj_cocit_df, " ")
 
 
-#Matriz Citação
+#Matriz CitaÃ§Ã£o
 
 mtx_cit_df<-as.data.frame(mtx_cit)
 links_cit<-data.frame(source=c(mtx_cit_df$Var1), target=c(mtx_cit_df$Var2))
@@ -203,7 +203,7 @@ output$PlotCoupling <- renderPlot({
 
 input$runmodel
 
-if ("ABA (sem normalização)" %in% input$normalization)
+if ("ABA (sem normalizaÃ§Ã£o)" %in% input$normalization)
 
 plot(network_ABA, edge.width=c(net_list$ABA), vertex.size=9, vertex.color=rgb(0.8,0.6,0.8,0.9), vertex.label.color='black', edge.color='grey', vertex.label.cex=1)
 
@@ -211,7 +211,7 @@ if ("Cosseno de Salton" %in% input$normalization)
 
 plot(network_ABA, edge.width=c(net_list$Saltons_Cosine*10), vertex.size=9, vertex.color=rgb(0.8,0.6,0.8,0.9), vertex.label.color='black', edge.color='grey', vertex.label.cex=1)
 
-if  ("Índice de Jaccard" %in% input$normalization)
+if  ("Ãndice de Jaccard" %in% input$normalization)
 
 plot(network_ABA, edge.width=c(net_list$Jaccard_Index*10), vertex.size=9, vertex.color=rgb(0.8,0.6,0.8,0.9), vertex.label.color='black', edge.color='grey', vertex.label.cex=1)
 
