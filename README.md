@@ -12,6 +12,9 @@ Ferramenta para análises relacionais de citação com foco no acoplamento bibli
 10) A "Matriz de Citação" não é ponderada e apresenta a matriz booleana de citação composta por 0 ou 1.
 11) A "Matriz de Acoplamento" é ponderada via ABA.
 12) Os valores de entrada da "Matriz de Cocitação" representam a quantidade de listas de referências em que cada par é cocitado.
-13) Contato: rafael.castanha@unesp.br
+13) Em caso de erro com apostrofo ('), considere excluir os apostrofos, reescrever o nome ou substituir, por exemplo, por underline (_).
+14) Caso algum vetor (coluna) seja nulo, ie, somente o cabeçalho, sem conteúdo, a aplicação retornará erro. Considere excluí-lo da análise.
+
+15) Contato: rafael.castanha@unesp.br
 
 15) Assista o vídeo explicativo do funcionamento do código da ferramenta em: https://youtu.be/f95I_gc6vi8
