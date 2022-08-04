@@ -195,7 +195,7 @@ server <- function(input, output){
     mtx_adj_cit_df<-as.data.frame(as.matrix(mtx_adj_cit))
     l<-length(references$units)
     l1=l+1
-    l2<-length(unique(mtx_cit_df$Var2))
+    l2<-length(unique(mtx_cit_df$Var2))+l
     mtx_citation<-mtx_adj_cit_df[1:l,l1:l2]
     mtx_citation<-tibble::rownames_to_column(mtx_citation, " ") 
     
@@ -205,15 +205,15 @@ server <- function(input, output){
       
       if ("ABA (sem normalização)" %in% input$normalization)
         
-        plot(network_ABA, edge.width=c(net_list$ABA), vertex.size=9, vertex.color=rgb(0.8,0.6,0.8,0.9), vertex.label.color='black', edge.color='grey', vertex.label.cex=1)
+        plot(network_ABA, layout=layout_as_star, edge.width=c(net_list$ABA), vertex.size=9, vertex.color=rgb(0.8,0.6,0.8,0.9), vertex.label.color='black', edge.color='grey', vertex.label.cex=1)
       
       if ("Cosseno de Salton" %in% input$normalization)
         
-        plot(network_ABA, edge.width=c(net_list$Saltons_Cosine*10), vertex.size=9, vertex.color=rgb(0.8,0.6,0.8,0.9), vertex.label.color='black', edge.color='grey', vertex.label.cex=1)
+        plot(network_ABA, layout=layout_as_star, edge.width=c(net_list$Saltons_Cosine*10), vertex.size=9, vertex.color=rgb(0.8,0.6,0.8,0.9), vertex.label.color='black', edge.color='grey', vertex.label.cex=1)
       
       if  ("Índice de Jaccard" %in% input$normalization)
         
-        plot(network_ABA, edge.width=c(net_list$Jaccard_Index*10), vertex.size=9, vertex.color=rgb(0.8,0.6,0.8,0.9), vertex.label.color='black', edge.color='grey', vertex.label.cex=1)
+        plot(network_ABA, layout=layout_as_star, edge.width=c(net_list$Jaccard_Index*10), vertex.size=9, vertex.color=rgb(0.8,0.6,0.8,0.9), vertex.label.color='black', edge.color='grey', vertex.label.cex=1)
       
     })
     
