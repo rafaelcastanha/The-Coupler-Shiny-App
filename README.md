@@ -1,3 +1,5 @@
+#the_coupler
+
 Ferramenta para análises relacionais de citação com foco no acoplamento bibliográfico.
 
 1) A ferramenta pode ser usada para qualquer unidade de análise (documentos, autores, periódicos, palavras-chave, DOI, seguidores em redes sociais, etc).
