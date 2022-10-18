@@ -84,9 +84,12 @@ server <- function(input, output){
         
       })
     
-    corpus<-isolate(read.table(r()$datapath, header = TRUE, sep = input$sep, quote="\""))
-    
-    
+    corpus<-isolate(read.table(r()$datapath, header = FALSE, sep = input$sep, quote="\""))
+    colnames(corpus)<-corpus[1,]
+    corpus<-corpus[(-1),]
+    hd<-gsub("\\.$","",names(corpus))
+    colnames(corpus)<-hd
+        
     #Corpus para dataframe
     
     corpus<-as.data.frame(corpus)
