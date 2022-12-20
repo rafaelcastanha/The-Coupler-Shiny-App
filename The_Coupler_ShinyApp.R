@@ -1,11 +1,8 @@
-#PACOTES
+#Memória
 
-install.packages('shiny')
-install.packages('shinydashboard')
-install.packages('flexdashboard')
-install.packages('dplyr')
-install.packages('RVenn')
-install.packages('igraph')
+memory.limit(size=56000)
+
+#PACOTES
 
 library(dplyr)
 library(RVenn)
@@ -13,10 +10,12 @@ library(igraph)
 library(shiny)
 library(shinydashboard)
 library(flexdashboard)
+library(visNetwork)
+library(networkD3)
 
 # UI e Server R
 
-ui <- fluidPage(dashboardPage(dashboardHeader(title="The Coupler"), dashboardSidebar(
+ui <- fluidPage(dashboardPage(title='the_coupler',dashboardHeader(title = img(src="couplerbrancovf.png")), dashboardSidebar(title=h5('Atualizado em: 20 dez. 2022',style = "margin-left:110px;margin-top:0px;font-size:10px"),
   
   fileInput("file1", "Selecione o arquivo:", accept = ".txt"),
   
@@ -26,43 +25,60 @@ ui <- fluidPage(dashboardPage(dashboardHeader(title="The Coupler"), dashboardSid
   
   fluidPage(h5(" ")),
   
-  fluidPage(tags$a(href="https://github.com/rafaelcastanha/The-Coupler-Shiny-App", "Instruções de uso e Código (GitHub)")),
+  fluidPage(tags$a(href="https://github.com/rafaelcastanha/The-Coupler-Shiny-App", "Instruções e Código (GitHub)", style = "margin-left:15px;")),
   
   fluidPage(h5(" ")),
   
-  fluidPage(tags$a(href="http://lattes.cnpq.br/4834832439175113", "Currículo Lattes")),
+  fluidPage(tags$a(href="https://doi.org/10.20396/rdbci.v20i00.8671208", "Artigo do The Coupler", style = "margin-left:15px;")),
   
   fluidPage(h5(" ")),
   
-  fluidPage(tags$a(href="https://www.researchgate.net/profile/Rafael-Gutierres-Castanha-2", "ResearchGate")),
+  fluidPage(tags$a(href="https://zenodo.org/record/7130614#.YzdGCnbMLIU", "Arquivos para testes", style = "margin-left:15px;")),
+  
+  fluidPage(h5(" ")),
+  
+  fluidPage(tags$a(href="http://lattes.cnpq.br/4834832439175113", "Currículo Lattes", style = "margin-left:15px;")),
+  
+  fluidPage(h5(" ")),
+  
+  fluidPage(tags$a(href="https://www.researchgate.net/profile/Rafael-Gutierres-Castanha-2", "ResearchGate", style = "margin-left:15px;")),
   
   fluidPage(h5(" ")), 
   
-  out = fluidPage(h5("Desenvolvido por:")), out = fluidPage(h5("Rafael Gutierres Castanha")), 
+  out = fluidPage(h5("Desenvolvido por:", style = "margin-left:15px;")), 
+  
+  out = fluidPage(h5("Rafael Gutierres Castanha", style = "margin-left:15px;margin-top:0px;")), 
   
   fluidPage(h5(" ")),
   
-  out = fluidPage(h5("rafael.castanha@unesp.br")),
+  out = fluidPage(h5("rafael.castanha@unesp.br", style = "margin-left:15px;margin-top:-10px;")),
   
   actionButton("runmodel", "Coupling!")),
   
-  dashboardBody(
-    
-    tabsetPanel(type="tab",
+   dashboardBody(tags$head(tags$style(HTML('
+      .container-fluid {
+    padding-right: 0px;
+    padding-left: 0px;}'))),
                 
-                tabPanel(title="Rede de Acoplamento Bibliográfico", column(textOutput("erro"), width = 12, plotOutput(outputId = "PlotCoupling",  width = "100%", heigh=680))), 
-                
-                tabPanel(title="Frequências de Acoplamento", dataTableOutput(outputId = "DataFrameCoupling"),downloadButton("dlfreq", "Download Data")),
-                
-                tabPanel(title="Unidades de Acoplamento",style='overflow-x: scroll', dataTableOutput(outputId = "DataFrameUnits"),downloadButton("dlunits", "Download Data")),
-                
-                tabPanel(title="Matriz de Citação", style='overflow-x: scroll', dataTableOutput(outputId = "DataFrameCit"),downloadButton("dlcit", "Download Data")),
-                
-                tabPanel(title="Matriz de Acoplamento", style='overflow-x: scroll', dataTableOutput(outputId = "DataFrameMatrix"),downloadButton("dlaba", "Download Data")),
-                
-                tabPanel(title="Matriz de Cocitação", style='overflow-x: scroll', dataTableOutput(outputId = "DataFrameCocit"),downloadButton("dlcocit", "Download Data"))
-                
-    ))))
+                fluidRow(width = 12, height = NULL,
+                         
+                         tabsetPanel(type="tab",
+                                     
+                                     tabPanel(title="Rede de Acoplamento Bibliográfico", column(textOutput("erro"), width = 12, visNetworkOutput("PlotCoupling",  width = "100%", heigh=540))), 
+                                     
+                                     tabPanel(title="Frequências de Acoplamento", dataTableOutput(outputId = "DataFrameCoupling"),downloadButton("dlfreq", "Download Data")),
+                                     
+                                     tabPanel(title="Unidades de Acoplamento",style='overflow-x: scroll', dataTableOutput(outputId = "DataFrameUnits"),downloadButton("dlunits", "Download Data")),
+                                     
+                                     tabPanel(title="Matriz de Citação", style='overflow-x: scroll', dataTableOutput(outputId = "DataFrameCit"),downloadButton("dlcit", "Download Data")),
+                                     
+                                     tabPanel(title="Matriz de Acoplamento", style='overflow-x: scroll', dataTableOutput(outputId = "DataFrameMatrix"),downloadButton("dlaba", "Download Data")),
+                                     
+                                     tabPanel(title="Matriz de Cocitação", style='overflow-x: scroll', dataTableOutput(outputId = "DataFrameCocit"),downloadButton("dlcocit", "Download Data"))
+                                     
+                         ))))
+  
+)
 
 server <- function(input, output){
   
@@ -85,11 +101,12 @@ server <- function(input, output){
       })
     
     corpus<-isolate(read.table(r()$datapath, header = FALSE, sep = input$sep, quote="\""))
+    
     colnames(corpus)<-corpus[1,]
     corpus<-corpus[(-1),]
     hd<-gsub("\\.$","",names(corpus))
     colnames(corpus)<-hd
-        
+    
     #Corpus para dataframe
     
     corpus<-as.data.frame(corpus)
@@ -179,6 +196,25 @@ server <- function(input, output){
       edge_CS<-net_list$Saltons_Cosine
       edge_IJ<-net_list$Jaccard_Index
       
+      node1<-as.data.frame(references$units)
+      node2<-as.data.frame(references$units)
+      colnames(node1)[1]<-"id"
+      colnames(node2)[1]<-"label"
+      node<-data.frame(node1, node2)
+      
+      ED_coupling<-mutate(links, width = edge_ABA)
+      colnames(ED_coupling)[1]<-"from"
+      colnames(ED_coupling)[2]<-"to"
+      
+      ED_salton<-mutate(links, width = edge_CS*10)
+      colnames(ED_salton)[1]<-"from"
+      colnames(ED_salton)[2]<-"to"
+      
+      ED_jaccard<-mutate(links, width = edge_IJ*10)
+      colnames(ED_jaccard)[1]<-"from"
+      colnames(ED_jaccard)[2]<-"to"
+      
+      
       #Matrizes Adjacencia
       
       #Matriz Acoplamento
@@ -228,21 +264,34 @@ server <- function(input, output){
         
       })
       
-      output$PlotCoupling <- renderPlot({
+      output$PlotCoupling <- renderVisNetwork({
         
         input$runmodel
         
-        if ("sem normalização" %in% input$normalization)
+        if ("sem normalização" %in% input$normalization){
           
-          plot(network_ABA,  layout=layout_as_star, edge.width=c(net_list$Coupling), vertex.size=9, vertex.color=rgb(0.8,0.6,0.8,0.9), vertex.label.color='black', edge.color='grey', vertex.label.cex=1)
+          visNetwork(node, ED_coupling) %>%
+            visOptions(highlightNearest = TRUE, nodesIdSelection = TRUE) %>%
+            visIgraphLayout(layout = "layout_with_fr")}
         
-        if ("Cosseno de Salton" %in% input$normalization)
+        else{
           
-          plot(network_ABA, layout=layout_as_star, edge.width=c(net_list$Saltons_Cosine*10), vertex.size=9, vertex.color=rgb(0.8,0.6,0.8,0.9), vertex.label.color='black', edge.color='grey', vertex.label.cex=1)
+          if ("Cosseno de Salton" %in% input$normalization){
+            
+            visNetwork(node, ED_salton) %>% 
+              visOptions(highlightNearest = TRUE, nodesIdSelection = TRUE) %>%
+              visIgraphLayout(layout = "layout_with_fr")}
+          
+          else{        
+            if  ("Índice de Jaccard" %in% input$normalization)
+              
+              visNetwork(node, ED_jaccard) %>% 
+              visOptions(highlightNearest = TRUE, nodesIdSelection = TRUE) %>%
+              visIgraphLayout(layout = "layout_with_fr")
+            
+          }
+        }
         
-        if  ("Índice de Jaccard" %in% input$normalization)
-          
-          plot(network_ABA,  layout=layout_as_star, edge.width=c(net_list$Jaccard_Index*10), vertex.size=9, vertex.color=rgb(0.8,0.6,0.8,0.9), vertex.label.color='black', edge.color='grey', vertex.label.cex=1)
         
       })
       
