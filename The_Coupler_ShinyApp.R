@@ -15,7 +15,7 @@ library(networkD3)
 
 # UI e Server R
 
-ui <- fluidPage(dashboardPage(title='the_coupler',dashboardHeader(title = img(src="couplerbrancovf.png")), dashboardSidebar(title=h5('Atualizado em: 20 dez. 2022',style = "margin-left:110px;margin-top:0px;font-size:10px"),
+ui <- fluidPage(dashboardPage(title='the_coupler',dashboardHeader(title = img(src="couplerbrancovf.png")), dashboardSidebar(title=h5('Atualizado em: 27 dez. 2022',style = "margin-left:110px;margin-top:0px;font-size:10px"),
   
   fileInput("file1", "Selecione o arquivo:", accept = ".txt"),
   
@@ -154,12 +154,18 @@ server <- function(input, output){
     
     df<-as.data.frame(table(stack(ABA)))
     
-    df<-as.data.frame(table(stack(ABA)))
+    
     
     if (nrow(df)==0) {
       
-      output$PlotCoupling<-renderPlot({plot(c(0, 1), c(0, 1), ann = F, bty = 'n', type = 'n', xaxt = 'n', yaxt = 'n')
-        text(x = 0.5, y = 0.5, paste("WARNING: No couplings between units (ALERTA: Não há acoplamento entre as unidades!)"), cex = 1.5, col = "black")
+      nodes <- data.frame(id = 1, shape = "icon", icon.face = 'Ionicons',
+                          icon.code = c("f100"))
+      edges <- data.frame(from = c(1))
+      
+      output$PlotCoupling<-renderVisNetwork({
+        
+        visNetwork(nodes=nodes, edges=edges,shape = "icon",
+                   main="WARNING: No couplings between units (ALERTA: Não há acoplamento entre as unidades!)") %>% addIonicons()
         
       })
       
@@ -227,9 +233,15 @@ server <- function(input, output){
       
       dt<-stack(corpus)
       dt2<-table(dt$values[row(dt[-1])], unlist(dt[-1]))
+      
       mtx_cit<-t(dt2)
       mtx_cocit<-(t(mtx_cit) %*% mtx_cit)
       mtx_cocit<-as.table(mtx_cocit)
+      
+      #Matriz Citação
+      
+      mtx_cit<-as.data.frame.matrix(mtx_cit)
+      mtx_cit<-tibble::rownames_to_column(mtx_cit, " ")
       
       #Matriz Cocitação
       
@@ -244,17 +256,7 @@ server <- function(input, output){
       
       #Matriz Citação
       
-      mtx_cit_df<-as.data.frame(mtx_cit)
-      links_cit<-data.frame(source=c(mtx_cit_df$Var1), target=c(mtx_cit_df$Var2))
-      network_cit<-graph_from_data_frame(d=links_cit, directed=T)
-      E(network_cit)$weight<-mtx_cit_df$Freq
-      mtx_adj_cit<-as_adjacency_matrix(network_cit, attr="weight")
-      mtx_adj_cit_df<-as.data.frame(as.matrix(mtx_adj_cit))
-      l<-length(references$units)
-      l1=l+1
-      l2<-length(unique(mtx_cit_df$Var2))+l
-      mtx_citation<-mtx_adj_cit_df[1:l,l1:l2]
-      mtx_citation<-tibble::rownames_to_column(mtx_citation, " ") 
+
       
       output$erro<-renderText({
         
@@ -299,7 +301,7 @@ server <- function(input, output){
       
       output$DataFrameUnits <- renderDataTable(units_final)
       
-      output$DataFrameCit <- renderDataTable(mtx_citation)
+      output$DataFrameCit <- renderDataTable(mtx_cit)
       
       output$DataFrameMatrix <- renderDataTable(mtx_adj)
       
