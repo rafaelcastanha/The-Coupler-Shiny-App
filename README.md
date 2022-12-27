@@ -1,6 +1,6 @@
 #the_coupler
 
-![alt text]()
+![alt text](https://raw.githubusercontent.com/rafaelcastanha/The-Coupler-Shiny-App/main/coupler_git.bmp)
 
 Ferramenta para análises relacionais de citação com foco no acoplamento bibliográfico.
 
