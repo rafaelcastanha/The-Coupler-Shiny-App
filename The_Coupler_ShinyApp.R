@@ -139,8 +139,7 @@ server <- function(input, output){
     ABA<-overlap_pairs(corpus_aba)
     
     #Unidades por acoplamento
-    
-    
+        
     unit_aba<-na.omit(stack(ABA))
     
     units_coupling<-unit_aba %>% group_by(ind) %>% summarise(valeus=(paste(values, collapse="; ")))
@@ -253,10 +252,7 @@ server <- function(input, output){
       mtx_adj_cocit_df<-as.data.frame(as.matrix(mtx_adj_cocit))
       mtx_adj_cocit_df<-tibble::rownames_to_column(mtx_adj_cocit_df, " ")
       
-      
-      #Matriz Citação
-      
-
+      #Outputs  
       
       output$erro<-renderText({
         
@@ -265,6 +261,8 @@ server <- function(input, output){
         if (nrow(df)!=0) {print(" ")}
         
       })
+      
+      #Output Redes
       
       output$PlotCoupling <- renderVisNetwork({
         
@@ -297,6 +295,8 @@ server <- function(input, output){
         
       })
       
+      #Output Tabelas
+      
       output$DataFrameCoupling <- renderDataTable(Freq_ABA)
       
       output$DataFrameUnits <- renderDataTable(units_final)
@@ -306,6 +306,8 @@ server <- function(input, output){
       output$DataFrameMatrix <- renderDataTable(mtx_adj)
       
       output$DataFrameCocit <- renderDataTable(mtx_adj_cocit_df)
+      
+      #Downloads
       
       output$dlfreq <- downloadHandler(
         filename = function(){
@@ -331,7 +333,6 @@ server <- function(input, output){
           write.table(mtx_citation, file, sep="\t", row.names = F, col.names = TRUE)
         })
       
-      
       output$dlaba <- downloadHandler(
         filename = function(){
           paste("Matriz de Acoplamento", "txt", sep=".")
@@ -352,5 +353,7 @@ server <- function(input, output){
   })
   
 }
+
+#Rodar o The coupler
 
 shinyApp(ui, server)
