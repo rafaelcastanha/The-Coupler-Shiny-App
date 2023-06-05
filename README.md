@@ -21,3 +21,5 @@ Ferramenta para análises relacionais de citação com foco no acoplamento bibli
 15) Contato: rafael.castanha@unesp.br
 
 16) Assista o vídeo explicativo do funcionamento a parte principal do código da ferramenta em: https://youtu.be/f95I_gc6vi8
+
+17) Artigo publicado: https://doi.org/10.20396/rdbci.v20i00.8671208
