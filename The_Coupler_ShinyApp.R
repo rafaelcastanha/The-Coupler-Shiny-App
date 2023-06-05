@@ -4,6 +4,15 @@ memory.limit(size=56000)
 
 #PACOTES
 
+install.packages('dplyr')
+install.packages('RVenn')
+install.packages('igraph')
+install.packages('shiny')
+install.packages('shinydashboard')
+install.packages('flexdashboard')
+install.packages('visNetwork')
+install.packages('networkD3')
+
 library(dplyr)
 library(RVenn)
 library(igraph)
@@ -13,9 +22,11 @@ library(flexdashboard)
 library(visNetwork)
 library(networkD3)
 
+
+
 # UI e Server R
 
-ui <- fluidPage(dashboardPage(title='the_coupler',dashboardHeader(title = img(src="couplerbrancovf.png")), dashboardSidebar(title=h5('Atualizado em: 27 dez. 2022',style = "margin-left:110px;margin-top:0px;font-size:10px"),
+ui <- fluidPage(dashboardPage(title='the_coupler',dashboardHeader(title = img(src="couplerbrancovf.png")), dashboardSidebar(title=h5('Atualizado em: 25 abril 2023 INPI:BR512023001129-0',style = "margin-left:110px;margin-top:0px;font-size:10px"),
   
   fileInput("file1", "Selecione o arquivo:", accept = ".txt"),
   
