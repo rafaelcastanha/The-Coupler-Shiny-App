@@ -2,18 +2,7 @@
 
 memory.limit(size=56000)
 
-#PACOTES (instale se necessário)
-
-install.packages('dplyr')
-install.packages('RVenn')
-install.packages('igraph')
-install.packages('shiny')
-install.packages('shinydashboard')
-install.packages('flexdashboard')
-install.packages('visNetwork')
-install.packages('networkD3')
-
-#Bibliotecas
+#PACOTES
 
 library(dplyr)
 library(RVenn)
@@ -22,16 +11,28 @@ library(shiny)
 library(shinydashboard)
 library(flexdashboard)
 library(visNetwork)
-library(networkD3)
+library(shinycssloaders)
 
 # UI e Server R
 
-ui <- fluidPage(dashboardPage(title='the_coupler',dashboardHeader(title = img(src="couplerbrancovf.png")), 
-dashboardSidebar(title=h5('Atualizado em: 25 julho 2023 INPI:BR512023001129-0',
+ui <- fluidPage(
+
+dashboardPage(title='the_coupler',dashboardHeader
+(title = img(src="couplerbrancovf.png")),
+
+dashboardSidebar(title=h5('Atualizado em: 25 set 2023 INPI:BR512023001129-0',
 style = "margin-left:110px;margin-top:0px;font-size:10px"),
 
-fileInput("file1", "Selecione o arquivo:", accept = ".txt"),
+div(tags$style(HTML("section.sidebar .shiny-input-container {
+padding: 0px 15px 0px 15px;
+white-space: normal;
+}"))),
 
+
+div(tags$style(HTML(".form-group {
+margin-bottom: 0px;
+}"))),
+fileInput("file1", "Selecione o arquivo:", accept = ".txt"),
 selectInput("sep", "Separador:", c(" ", Vírgula = ",", Ponto_Vírgula = ";", Tabulado = "\t")),
 
 selectInput("normalization", "Normalizações:", c("sem normalização", "Cosseno de Salton", "Índice de Jaccard")),
@@ -66,7 +67,7 @@ fluidPage(h5(" ")),
 
 out = fluidPage(h5("rafael.castanha@unesp.br", style = "margin-left:15px;margin-top:-10px;")),
 
-actionButton("runmodel", "Coupling!")),
+actionButton("runmodel", "Coupling!", style="width:200px;")),
 
 dashboardBody(tags$head(tags$style(HTML('
 .container-fluid {
@@ -78,11 +79,13 @@ fluidRow(width = 12, height = NULL,
 tabsetPanel(type="tab",
 
 tabPanel(title="Rede de Acoplamento Bibliográfico",
+conditionalPanel("input.runmodel!=0",
 column(textOutput("erro"), width = 12,
-visNetworkOutput("PlotCoupling", width = "100%", heigh=500),
+withSpinner(visNetworkOutput("PlotCoupling", width = "100%", heigh=450)),
 downloadButton("dl_net", "Download Rede (.html)"),
-downloadButton("dl_pajek_net", "Download pajek (.net)"))),
+downloadButton("dl_pajek_net", "Download pajek (.net)")))),
 
+            
 tabPanel(title="Frequências de Acoplamento",
 dataTableOutput(outputId = "DataFrameCoupling"),
 downloadButton("dlfreq", "Download Data")),
@@ -169,7 +172,6 @@ corpus_aba<-Venn(corpus)
 ABA<-overlap_pairs(corpus_aba)
 
 #Unidades por acoplamento
-
 
 unit_aba<-na.omit(stack(ABA))
 
@@ -277,7 +279,6 @@ mtx_adj_df<-tibble::rownames_to_column(as.data.frame(mtx_adj), " ")
 
 mtx_adj_cocit_df<-tibble::rownames_to_column(as.data.frame(mtx_cocit), " ")
 
-
 #MENSAGEM DE ERRO
 
 output$erro<-renderText({
@@ -357,6 +358,7 @@ content = function(file){
 write.table(mtx_cit_df, file, sep="\t", row.names = F, col.names = TRUE)
 })
 
+
 output$dlaba <- downloadHandler(
 filename = function(){
 paste("Matriz de Acoplamento", "txt", sep=".")
@@ -373,6 +375,7 @@ content = function(file){
 write.table(mtx_adj_cocit_df, file, sep="\t", row.names = F, col.names = TRUE)
 })
 
+
 #DOWNLOAD IMAGEM: HTML
 
 output$dl_net <- downloadHandler(
@@ -384,6 +387,7 @@ paste("Rede de Acoplamento_img", "html", sep=".")
 content = function(file){
 visSave(graph=vis, file = file)
 })
+
 
 #DOWNLOAD REDE DE ACOPLAMENTO
 
@@ -407,6 +411,8 @@ write.graph(rede_paj, file, format = "pajek")
 })
 
 
+#Output download Pajek (aba da rede)
+
 output$dl_pajek_net <- downloadHandler(
 
 filename = function(){
@@ -418,6 +424,7 @@ paste("Rede de Acoplamento", "net", sep=".")
 content = function(file){
 write.graph(rede_paj, file, format = "pajek")
 })
+
 
 #DOWNLOAD REDE DE COCITACAO
 
@@ -459,6 +466,4 @@ write.graph(rede_cit, file, format = "pajek")
 
 }
 
-#Rodar o the_coupler
-        
 shinyApp(ui, server)
