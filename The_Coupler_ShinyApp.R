@@ -394,7 +394,7 @@ visSave(graph=vis, file = file)
 #Construção da rede de acoplamento (pajek) para download
 
 rede_paj<-graph_from_adjacency_matrix(mtx_adj, weighted = T, mode = "undirected")
-E(rede_paj)$weight<-edge_ABA
+E(rede_paj)$weight<-E(rede_paj)$weight
 V(rede_paj)$id <- as.character(unique(row.names(mtx_adj)))
 
 #Output download Pajek (aba de matriz)
