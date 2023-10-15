@@ -20,7 +20,7 @@ ui <- fluidPage(
 dashboardPage(title='the_coupler',dashboardHeader
 (title = img(src="couplerbrancovf.png")),
 
-dashboardSidebar(title=h5('Atualizado em: 25 set 2023 INPI:BR512023001129-0',
+dashboardSidebar(title=h5('Atualizado em: 15 out 2023 INPI:BR512023001129-0',
 style = "margin-left:110px;margin-top:0px;font-size:10px"),
 
 div(tags$style(HTML("section.sidebar .shiny-input-container {
@@ -444,10 +444,10 @@ write.graph(rede_cocit, file, format = "pajek")
 
 #DOWNLOAD REDE DE CITACAO
 
-rede_cit<-graph_from_incidence_matrix(mtx_cit, weighted = T, directed = T)
+rede_cit<-graph_from_incidence_matrix(mtx_cit, weighted = T, directed = T, mode='out')
 id_cit<-c(row.names(mtx_cit),colnames(mtx_cit))
 E(rede_cit)$weight<-E(rede_cit)$weight
-V(rede_cit)$id <- as.character(unique(id_cit))
+V(rede_cit)$id <- as.character(id_cit)
 
 output$dlcitpaj <- downloadHandler(
 
