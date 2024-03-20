@@ -2,7 +2,7 @@
 
 Ferramenta para análises relacionais de citação com foco no acoplamento bibliográfico (análise de similaridade).
 
-1) A ferramenta foi inicialmente concebiada para análise bibliométriccas porém pode ser usada para qualquer unidade de análise processando dados de diferentes natureza (documentos, autores, periódicos, palavras-chave, DOI, seguidores em redes sociais, gestão de pessoas, cooperação em projeto, etc).
+1) A ferramenta foi inicialmente concebida para análise bibliométriccas porém pode ser usada para qualquer unidade de análise processando dados de diferentes natureza (documentos, autores, periódicos, palavras-chave, DOI, seguidores em redes sociais, gestão de pessoas, cooperação em projetos, etc).
 2) Selecione o arquivo em extensão txt para executar o processamento: O arquivo deve ser organizado em colunas separadas por vírgula, ponto e vírgula ou tabulado, em que o cabeçalho representa o item citante e cada linha abaixo do cabeçalho, os itens citados.
 3) É desejavel que cada coluna contenha valores únicos.
 4) Selecione a separação do seu arquivo: vírgula, ponto e vírgula ou tabulado.
